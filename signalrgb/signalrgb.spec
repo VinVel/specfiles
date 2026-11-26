@@ -7,7 +7,8 @@ URL:            https://www.signalrgb.com/
 Source0:        https://pkgs.signalrgb.com/apt/pool/stable/main/s/signalrgb/signalrgb_%{version}-7617_amd64.deb
 # SHA256:        5c8c29d193f75ff1d02874bbd32ca2b130b75a0312bb9d6fafea156b3da2599c
 
-BuildArch:      x86_64
+# Copr may create the source RPM on a non-x86_64 host. Restrict the binary
+# build in %build instead of making source RPM parsing architecture-specific.
 # The upstream binaries are already stripped; Fedora cannot generate a
 # meaningful debuginfo or debugsource package from the Debian payload.
 %global debug_package %{nil}
@@ -97,6 +98,10 @@ tar --zstd -xf data.tar.zst
 
 %build
 # Upstream provides a prebuilt application.
+if [ "%{_target_cpu}" != "x86_64" ]; then
+    echo "The upstream Debian payload is available only for x86_64" >&2
+    exit 1
+fi
 
 %install
 mkdir -p %{buildroot}
@@ -141,6 +146,7 @@ fi
 
 %changelog
 * Thu Nov 26 2026 VinVel <vinvel@users.noreply.local> - 2.5.86-7617
+- Allow Copr to generate the source RPM on any architecture
 - Correct Fedora library dependencies and bridge Tesseract 5.5's SONAME
 - Disable empty debugsource generation for prebuilt binaries
 - Include the desktop icon sizes from the Debian package
