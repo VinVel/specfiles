@@ -48,7 +48,11 @@ Requires:       pango
 Requires:       pipewire-libs
 Requires:       pulseaudio-libs
 Requires:       libsecret
+%if 0%{?fedora} >= 45
 Requires:       openssl3-libs
+%else
+Requires:       openssl-libs
+%endif
 Requires:       libstdc++
 Requires:       tesseract-libs
 Requires:       systemd-libs
@@ -146,6 +150,7 @@ fi
 
 %changelog
 * Thu Nov 26 2026 VinVel <vinvel@users.noreply.local> - 2.5.86-7617
+- Use Fedora 44's OpenSSL 3 package name when building for Fedora 44
 - Allow Copr to generate the source RPM on any architecture
 - Correct Fedora library dependencies and bridge Tesseract 5.5's SONAME
 - Disable empty debugsource generation for prebuilt binaries
